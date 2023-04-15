@@ -8,7 +8,7 @@ use std::{
 fn main() {
     loop {
         print!("> ");
-        stdout().flush();
+        stdout().flush().unwrap();
 
         let mut input = String::new();
         stdin().read_line(&mut input).unwrap();
@@ -25,10 +25,16 @@ fn main() {
                     eprintln!("{}", e);
                 }
             }
+            "exit" => return,
             command => {
-                let mut child = Command::new(command).args(args).spawn().unwrap();
+                let child = Command::new(command).args(args).spawn();
 
-                child.wait();
+                match child {
+                    Ok(mut child) => {
+                        child.wait();
+                    }
+                    Err(e) => eprintln!("{}", e),
+                };
             }
         }
     }
